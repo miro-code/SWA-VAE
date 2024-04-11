@@ -39,9 +39,7 @@ def failure_demo():
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
     ])
     train_dataset = CIFAR10(root='./data', train=True, download=True, transform=transform)
-    #TODO debug
-    train_dataset, _ = torch.utils.data.random_split(train_dataset, [1000, 49000])
-    train_dataset, val_dataset = torch.utils.data.random_split(train_dataset, [800, 200])
+    train_dataset, val_dataset = torch.utils.data.random_split(train_dataset, [40000, 10000])
     test_dataset = CIFAR10(root='./data', train=False, download=True, transform=transform)
     train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=256, shuffle=False)

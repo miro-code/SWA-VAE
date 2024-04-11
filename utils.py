@@ -6,11 +6,20 @@ import numpy as np
 def plot_training(train_loss, val_loss, filename):
     plt.plot(train_loss, label='train loss', color='b')
     plt.plot(val_loss, label='val loss', color='r')
-    plt.xticks(np.arange(0, len(train_loss)))
+    plt.xticks(np.arange(1, len(train_loss)) + 1)
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend()
     plt.savefig(filename)
+    plt.close()
+
+def plot_graph(x, y, x_label, y_label, title, filename):
+    plt.plot(x, y)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title(title)
+    plt.savefig(filename)
+    plt.close()
 
 def forward_pass(model, data_loader, device):
     model.train()

@@ -23,6 +23,7 @@ def plot_graph(x, y, x_label, y_label, title, filename):
 
 def forward_pass(model, data_loader, device):
     model.train()
+    model.to(device)
     for img, _ in data_loader:
         img = img.to(device)
         model(img)

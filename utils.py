@@ -1,6 +1,7 @@
 
 from matplotlib import pyplot as plt
 import numpy as np
+from pytorch_lightning import LightningModule
 
 
 def plot_training(train_loss, val_loss, filename):
@@ -24,9 +25,13 @@ def plot_graph(x, y, x_label, y_label, title, filename):
 def forward_pass(model, data_loader, device):
     model.train()
     model.to(device)
-    for img, _ in data_loader:
+    for img, y in data_loader:
         img = img.to(device)
-        model(img)
+        #inherets from lightning module
+        if(isinstance(model, LightningModule)):
+            model.step((img, y), 0)
+        else:
+            model(img)
     
 
 def run_training(model, train_loader, val_loader, num_epochs, criterion, optimizer, device):
@@ -67,3 +72,13 @@ def run_evaluation(model, test_loader, criterion, device):
         test_loss += loss.item()
     mean_test_loss = test_loss/len(test_loader)
     return mean_test_loss
+
+
+def weight_averaging(model_class, snapshot_list, model_arguments = {}):
+    model = model_class(**model_arguments)
+    model_dict = model.state_dict()
+    for key in model_dict.keys():
+        #TODO this includes batchnorm running averages. Only include weights and biases
+        model_dict[key] = sum([m[key] for m in snapshot_list])/len(snapshot_list)
+    model.load_state_dict(model_dict)
+    return model  

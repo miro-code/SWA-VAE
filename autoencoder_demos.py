@@ -1,19 +1,10 @@
 from models import ConvAutoencoder
 import torch
-from utils import plot_training, run_training, run_evaluation, forward_pass, plot_graph
+from utils import plot_training, run_training, run_evaluation, forward_pass, plot_graph, weight_averaging
 import logging
 import os
 from datasets import get_cifar10_loaders, get_cifar10_debug_loaders
 import numpy as np
-
-def weight_averaging(model_class, models):
-    model = model_class()
-    model_dict = model.state_dict()
-    for key in model_dict.keys():
-        #TODO this includes batchnorm running averages. Only include weights and biases
-        model_dict[key] = sum([m[key] for m in models])/len(models)
-    model.load_state_dict(model_dict)
-    return model  
 
 def failure_demo():
     results_dir = os.path.join("results", 'failure_demo')
@@ -59,8 +50,8 @@ def failure_demo():
     plot_training(train_loss, val_loss, os.path.join(results_dir, 'training_plot.png'))
     average_test_loss = sum(test_losses)/len(test_losses)
     logging.info(f"Mean test loss: {average_test_loss}")
-    max_test_loss = max(test_losses)
-    logging.info(f"Max test loss: {max_test_loss}")
+    min_test_loss = min(test_losses)
+    logging.info(f"Min test loss: {min_test_loss}")
 
     averaged_model = weight_averaging(ConvAutoencoder, snapshot_dicts)
     forward_pass(averaged_model, train_loader, device)
@@ -111,8 +102,8 @@ def decoder_demo():
     plot_training(train_loss, val_loss, os.path.join(results_dir, 'training_plot.png'))
     average_test_loss = sum(test_losses)/len(test_losses)
     logging.info(f"Mean test loss: {average_test_loss}")
-    max_test_loss = max(test_losses)
-    logging.info(f"Max test loss: {max_test_loss}")
+    min_test_loss = min(test_losses)
+    logging.info(f"Max test loss: {min_test_loss}")
 
     averaged_model = weight_averaging(ConvAutoencoder, snapshot_dicts)
     forward_pass(averaged_model, train_loader, device)
@@ -164,8 +155,8 @@ def encoder_demo():
     plot_training(train_loss, val_loss, os.path.join(results_dir, 'training_plot.png'))
     average_test_loss = sum(test_losses)/len(test_losses)
     logging.info(f"Mean test loss: {average_test_loss}")
-    max_test_loss = max(test_losses)
-    logging.info(f"Max test loss: {max_test_loss}")
+    min_test_loss = min(test_losses)
+    logging.info(f"Max test loss: {min_test_loss}")
 
     averaged_model = weight_averaging(ConvAutoencoder, snapshot_dicts)
     forward_pass(averaged_model, train_loader, device)

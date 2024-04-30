@@ -47,7 +47,7 @@ if __name__ == "__main__":
     train_loader, val_loader, test_loader = get_mnist_loaders(hparams.bs)
     trainer = Trainer(accelerator=str(device), max_epochs=hparams.epochs)
     trainer.fit(m, train_loader)
-    test_loss = trainer.validate(m, test_loader)[0]["val_recon_loss"]
+    test_loss = trainer.validate(m, val_loader)[0]["val_recon_loss"]
     logging.info(f'Test loss: {test_loss}')
     logging.info("Snapshot phase")
     snapshot_dicts = [m.state_dict()]
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         model.to(device)
         trainer = Trainer(accelerator=str(device), max_epochs=1)
         trainer.fit(m, train_loader)
-        test_loss = trainer.validate(m, test_loader)[0]["val_recon_loss"]
+        test_loss = trainer.validate(m, val_loader)[0]["val_recon_loss"]
         snapshot_dicts.append(model.state_dict())
         test_losses.append(test_loss)
 
@@ -70,5 +70,5 @@ if __name__ == "__main__":
     averaged_model = weight_averaging(ConvVAE, snapshot_list=snapshot_dicts, model_arguments=model_params)
     forward_pass(averaged_model, train_loader, device)
 
-    test_loss = trainer.validate(m, test_loader)[0]["val_recon_loss"]
+    test_loss = trainer.validate(m, val_loader)[0]["val_recon_loss"]
     logging.info(f'Averaged Model Test loss: {test_loss}')

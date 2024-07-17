@@ -3,3 +3,4 @@ data/
 results/
 lightning_logs/
 .vscode/
+slurm_out/
